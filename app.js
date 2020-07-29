@@ -1,7 +1,10 @@
 const express = require('express')
+const path = require('path')
 
 const app = express()
-const PORT = process.ENV.PORT || 5000
+const PORT = process.env.PORT || 5000
+
+const users = require('./public/users.json')
 
 app.get(
   '/',
@@ -10,12 +13,23 @@ app.get(
   }
 )
 
+app.get(
+  '/users',
+  (request, response) => {
+    //response.sendFile('users.json', {root: path.join(__dirname, 'public')})
+    response.send(users)
+  }
+)
+
 app.put(
   '/users',
   (request, response) => {
     response.send("Received a PUT request at /users\n")
-    console.log(request)
+    console.log(`Put request`)
   }
 )
+
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
