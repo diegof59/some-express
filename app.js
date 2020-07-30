@@ -4,7 +4,13 @@ const path = require('path')
 const app = express()
 const PORT = process.env.PORT || 5000
 
-const users = require('./public/users.json')
+const users = require('./routes/users')
+
+// Middleware used to populate request.body:
+// for parsing application/json
+app.use(express.json())
+// for parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }))
 
 app.get(
   '/',
@@ -13,36 +19,8 @@ app.get(
   }
 )
 
-app.get(
-  '/users',
-  (request, response) => {
-    //response.sendFile('users.json', {root: path.join(__dirname, 'public')})
-    response.send(users)
-  }
-)
-
-app.get(
-  '/users/:id',
-  (request, response) => {
-    // users.users. get users array from users json
-    const result = users.users.filter((user) => (user.id === parseInt(request.params.id)))
-    console.log(users,' ',result)
-    if(result.length > 0){
-      response.json(result)
-    }
-    else{
-      response.status(400).json({msg: `User with id ${request.params.id} not found.`})
-    }
-  }
-)
-
-app.put(
-  '/users',
-  (request, response) => {
-    response.send("Received a PUT request at /users\n")
-    console.log(`Put request`)
-  }
-)
+// Use users router on /users
+app.use('/users', users)
 
 // Middleware example, a console logger
 function logger(request, response, next){
